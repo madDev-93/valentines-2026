@@ -1,29 +1,27 @@
 // Track opened letters
 let openedLetters = new Set();
 
-// Envelope positions for floating effect
+// Better positioned envelopes - spread out nicely on mobile
 const envelopePositions = [
-    { x: 15, y: 20, rotation: -15, delay: 0 },
-    { x: 65, y: 15, rotation: 12, delay: 0.5 },
-    { x: 40, y: 45, rotation: -8, delay: 1 },
-    { x: 10, y: 65, rotation: 18, delay: 1.5 },
-    { x: 60, y: 70, rotation: -12, delay: 2 }
+    { x: 10, y: 5, rotation: -12 },
+    { x: 55, y: 8, rotation: 8 },
+    { x: 25, y: 35, rotation: -5 },
+    { x: 60, y: 42, rotation: 10 },
+    { x: 35, y: 68, rotation: -8 }
 ];
 
-// Create floating hearts
+// Create floating hearts background
 function createHearts() {
     const container = document.getElementById('hearts');
-    const heartSymbols = ['♥', '♡', '❤'];
+    const heartSymbols = ['♥', '♡', '💕'];
 
-    for (let i = 0; i < 15; i++) {
-        setTimeout(() => {
-            createHeart(container, heartSymbols);
-        }, i * 500);
+    // Initial hearts
+    for (let i = 0; i < 10; i++) {
+        setTimeout(() => createHeart(container, heartSymbols), i * 600);
     }
 
-    setInterval(() => {
-        createHeart(container, heartSymbols);
-    }, 2500);
+    // Continuous hearts
+    setInterval(() => createHeart(container, heartSymbols), 3000);
 }
 
 function createHeart(container, symbols) {
@@ -31,24 +29,24 @@ function createHeart(container, symbols) {
     heart.className = 'floating-heart';
     heart.innerHTML = symbols[Math.floor(Math.random() * symbols.length)];
     heart.style.left = Math.random() * 100 + '%';
-    heart.style.fontSize = (12 + Math.random() * 18) + 'px';
-    heart.style.animationDuration = (8 + Math.random() * 6) + 's';
-    heart.style.animationDelay = Math.random() * 2 + 's';
+    heart.style.fontSize = (14 + Math.random() * 16) + 'px';
+    heart.style.animationDuration = (10 + Math.random() * 8) + 's';
     container.appendChild(heart);
 
-    setTimeout(() => {
-        heart.remove();
-    }, 16000);
+    setTimeout(() => heart.remove(), 20000);
 }
 
-// Start experience
+// Start the experience
 function startExperience() {
     document.getElementById('welcome').classList.remove('active');
-    document.getElementById('envelopesScreen').classList.add('active');
-    createFloatingEnvelopes();
+    setTimeout(() => {
+        document.getElementById('envelopesScreen').classList.add('active');
+        createFloatingEnvelopes();
+        updateProgress();
+    }, 300);
 }
 
-// Create floating envelopes
+// Create the floating envelopes
 function createFloatingEnvelopes() {
     const container = document.getElementById('envelopesArea');
     container.innerHTML = '';
@@ -58,43 +56,49 @@ function createFloatingEnvelopes() {
         const isOpened = openedLetters.has(letter.id);
 
         const envelope = document.createElement('div');
-        envelope.className = `floating-envelope ${isOpened ? 'opened' : ''}`;
+        envelope.className = `floating-envelope${isOpened ? ' opened' : ''}`;
         envelope.style.left = `${pos.x}%`;
         envelope.style.top = `${pos.y}%`;
         envelope.style.setProperty('--rotation', `${pos.rotation}deg`);
-        envelope.style.animationDelay = `${pos.delay}s`;
-        envelope.onclick = () => openLetter(letter, envelope);
+        envelope.style.animationDelay = `${index * 0.3}s`;
 
+        if (!isOpened) {
+            envelope.onclick = () => openLetter(letter, envelope);
+        }
+
+        // Create envelope SVG
         envelope.innerHTML = `
-            <svg class="envelope-svg" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
-                <!-- Envelope body -->
-                <rect class="envelope-body-svg" x="0" y="20" width="120" height="60" rx="4"/>
-                <!-- Inner shadow -->
-                <polygon class="envelope-inner-svg" points="0,20 60,55 120,20"/>
-                <!-- Flap -->
-                <polygon class="envelope-flap-svg" points="0,20 60,55 120,20 120,20 60,0 0,20"/>
-                <!-- Heart seal -->
-                <g transform="translate(60, 35)">
-                    <path class="envelope-heart" d="M0,-8 C-4,-12 -10,-8 -10,-3 C-10,3 0,10 0,10 C0,10 10,3 10,-3 C10,-8 4,-12 0,-8"/>
-                </g>
-            </svg>
-            <span class="envelope-number">${letter.id}</span>
+            <div class="envelope-wrapper">
+                <svg viewBox="0 0 110 75" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Back/shadow -->
+                    <rect class="env-back" x="2" y="22" width="106" height="51" rx="3"/>
+                    <!-- Main body -->
+                    <rect class="env-front" x="0" y="20" width="110" height="55" rx="4"/>
+                    <!-- Inner V shadow -->
+                    <polygon class="env-shadow" points="0,20 55,50 110,20 110,25 55,55 0,25"/>
+                    <!-- Flap -->
+                    <polygon class="env-flap" points="0,20 55,52 110,20 55,0"/>
+                    <!-- Wax seal circle -->
+                    <circle class="env-seal" cx="55" cy="32" r="12"/>
+                    <!-- Heart on seal -->
+                    <path class="env-seal-heart" d="M55,28 C53,25 49,26 49,30 C49,33 55,38 55,38 C55,38 61,33 61,30 C61,26 57,25 55,28"/>
+                </svg>
+                <span class="envelope-label">Letter ${letter.id}</span>
+            </div>
         `;
 
         container.appendChild(envelope);
     });
-
-    updateProgress();
 }
 
 // Open letter with animation
 function openLetter(letter, envelopeElement) {
     if (openedLetters.has(letter.id)) return;
 
-    // Create sparkles
+    // Sparkle effect
     createSparkles(envelopeElement);
 
-    // Set letter content
+    // Set content
     document.getElementById('letterPhoto').src = letter.photo;
     document.getElementById('letterText').textContent = letter.message;
 
@@ -102,12 +106,15 @@ function openLetter(letter, envelopeElement) {
     const overlay = document.getElementById('letterOverlay');
     const envelopeLarge = document.getElementById('envelopeLarge');
 
+    // Reset state
+    envelopeLarge.classList.remove('opening');
+
     overlay.classList.add('active');
 
-    // Trigger opening animation after a brief delay
+    // Trigger opening after overlay fades in
     setTimeout(() => {
         envelopeLarge.classList.add('opening');
-    }, 300);
+    }, 400);
 
     // Mark as opened
     openedLetters.add(letter.id);
@@ -115,28 +122,31 @@ function openLetter(letter, envelopeElement) {
     updateProgress();
 }
 
-// Create sparkle effect
+// Sparkle effect
 function createSparkles(element) {
     const rect = element.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
 
-    for (let i = 0; i < 12; i++) {
-        const sparkle = document.createElement('div');
-        sparkle.className = 'sparkle';
+    for (let i = 0; i < 15; i++) {
+        setTimeout(() => {
+            const sparkle = document.createElement('div');
+            sparkle.className = 'sparkle';
 
-        const angle = (i / 12) * Math.PI * 2;
-        const distance = 50 + Math.random() * 30;
-        const x = centerX + Math.cos(angle) * distance;
-        const y = centerY + Math.sin(angle) * distance;
+            const angle = (Math.random()) * Math.PI * 2;
+            const distance = 30 + Math.random() * 50;
+            const x = centerX + Math.cos(angle) * distance;
+            const y = centerY + Math.sin(angle) * distance;
 
-        sparkle.style.left = x + 'px';
-        sparkle.style.top = y + 'px';
-        sparkle.style.background = ['#ffd700', '#ff69b4', '#ff1493', '#ffffff'][Math.floor(Math.random() * 4)];
+            sparkle.style.left = x + 'px';
+            sparkle.style.top = y + 'px';
+            sparkle.style.background = ['#ffd700', '#ff69b4', '#ff1493', '#fff', '#ffb6c1'][Math.floor(Math.random() * 5)];
+            sparkle.style.width = (5 + Math.random() * 6) + 'px';
+            sparkle.style.height = sparkle.style.width;
 
-        document.body.appendChild(sparkle);
-
-        setTimeout(() => sparkle.remove(), 600);
+            document.body.appendChild(sparkle);
+            setTimeout(() => sparkle.remove(), 800);
+        }, i * 30);
     }
 }
 
@@ -149,34 +159,45 @@ function closeLetter() {
 
     setTimeout(() => {
         overlay.classList.remove('active');
-    }, 300);
 
-    // Check if all letters are opened
-    if (openedLetters.size === letters.length) {
-        setTimeout(() => {
-            showFinalScreen();
-        }, 800);
-    }
+        // Check if all opened
+        if (openedLetters.size === letters.length) {
+            setTimeout(showFinalScreen, 600);
+        }
+    }, 300);
 }
 
-// Update progress
+// Update progress indicator
 function updateProgress() {
-    const text = document.getElementById('progressText');
-    text.textContent = `${openedLetters.size} / ${letters.length} letters opened`;
+    const heartsContainer = document.getElementById('progressHearts');
+    const textEl = document.getElementById('progressText');
+
+    // Show hearts for progress
+    let hearts = '';
+    for (let i = 0; i < letters.length; i++) {
+        hearts += i < openedLetters.size ? '❤️' : '🤍';
+    }
+    heartsContainer.textContent = hearts;
+
+    textEl.textContent = `${openedLetters.size} of ${letters.length} letters opened`;
 }
 
 // Show final screen
 function showFinalScreen() {
     document.getElementById('envelopesScreen').classList.remove('active');
-    document.getElementById('finalScreen').classList.add('active');
 
-    // Update final message from config
-    document.querySelector('.final-content h1').textContent = finalMessage.title;
-    document.querySelector('.final-message').textContent = finalMessage.text;
-    document.querySelector('.final-content .signature').textContent = finalMessage.signature;
+    setTimeout(() => {
+        const final = document.getElementById('finalScreen');
+        final.classList.add('active');
+
+        // Update with custom messages
+        document.getElementById('finalTitle').textContent = finalMessage.title;
+        document.getElementById('finalText').textContent = finalMessage.text;
+        document.getElementById('finalSignature').textContent = finalMessage.signature;
+    }, 300);
 }
 
-// Initialize
+// Initialize on load
 document.addEventListener('DOMContentLoaded', () => {
     createHearts();
 });
