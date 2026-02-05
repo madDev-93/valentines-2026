@@ -1,51 +1,41 @@
 // ============================================
-// CUSTOMIZE YOUR LETTERS HERE!
+// YOUR LOVE LETTERS
 // ============================================
-// Add your own photos to the "photos" folder
-// and update the paths and messages below.
+// Feel free to edit these messages to make
+// them even more personal!
 // ============================================
 
 const letters = [
     {
         id: 1,
-        label: "Letter One",
-        hint: "Where it all began...",
-        photo: "photos/photo1.jpg",  // Add your photo
-        message: "From the moment I first saw you, I knew my life was about to change forever. You walked in and everything else faded away. This is where our beautiful story began."
+        photo: "photos/photo1.jpg",
+        message: "I still remember this moment like it was yesterday. Looking at you, I had no idea you'd become my whole world. Thank you for taking a chance on me. I'm so glad you did."
     },
     {
         id: 2,
-        label: "Letter Two",
-        hint: "A special memory...",
-        photo: "photos/photo2.jpg",  // Add your photo
-        message: "Remember this day? Every moment we spend together becomes a treasure I hold close to my heart. You make ordinary days feel extraordinary."
+        photo: "photos/photo2.jpg",
+        message: "Every date with you felt like an adventure. Even just sitting across from you at dinner made me feel like the luckiest guy alive. That hasn't changed one bit."
     },
     {
         id: 3,
-        label: "Letter Three",
-        hint: "What I love about you...",
-        photo: "photos/photo3.jpg",  // Add your photo
-        message: "Your smile lights up my world. Your laugh is my favorite sound. Your kindness inspires me every day. I fall more in love with you with each passing moment."
+        photo: "photos/photo3.jpg",
+        message: "The day I married you was the best day of my life. You looked so beautiful, and I couldn't believe you were really mine. I'd marry you a thousand times over."
     },
     {
         id: 4,
-        label: "Letter Four",
-        hint: "Our adventures...",
-        photo: "photos/photo4.jpg",  // Add your photo
-        message: "Every adventure is better with you by my side. Whether we're exploring new places or just staying home together, you make everything feel like magic."
+        photo: "photos/photo4.jpg",
+        message: "I love how we make the most ordinary moments feel special. Whether we're out having fun or just staying in, being with you is where I want to be. Always."
     },
     {
         id: 5,
-        label: "Letter Five",
-        hint: "My promise to you...",
-        photo: "photos/photo5.jpg",  // Add your photo
-        message: "I promise to love you, cherish you, and stand by you through all of life's moments. You are my today, my tomorrow, and my forever. I love you more than words could ever express."
+        photo: "photos/photo5.jpg",
+        message: "You've seen me at my best and my worst, and you've loved me through it all. I don't tell you enough how grateful I am for you. You make me want to be better every single day."
     }
 ];
 
-// Final screen message (customize this too!)
+// Final screen message
 const finalMessage = {
-    title: "I Love You",
-    text: "Every moment with you is a gift. Happy Valentine's Day, my love.",
-    signature: "- Your Husband"
+    title: "Te Amo",
+    text: "You are my best friend, my partner, my everything. I fall more in love with you every day. Happy Valentine's Day, mi amor.",
+    signature: "- Tu Esposo"
 };
