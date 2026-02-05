@@ -197,6 +197,7 @@ html {
 .envelopes-screen {
     justify-content: flex-start;
     padding-top: 60px;
+    overflow: visible;
 }
 
 .envelopes-header {
@@ -228,42 +229,59 @@ html {
     position: relative;
     width: 100%;
     flex: 1;
-    max-height: 65vh;
+    max-height: 70vh;
+    overflow: visible;
+    padding: 10px 25px 35px 25px; /* Mobile-first: smaller padding */
+    box-sizing: border-box;
 }
 
-/* Floating Envelope */
+/* Floating Envelope - Mobile first (smaller base size) */
 .floating-envelope {
     position: absolute;
-    width: 110px;
-    height: 75px;
+    width: 85px;
+    height: 58px;
     cursor: pointer;
-    transition: transform 0.3s ease, filter 0.3s ease;
+    transition: filter 0.3s ease;
     z-index: 10;
+    overflow: visible;
+    opacity: 0;
+    animation: entranceFloat var(--float-duration, 4s) ease-in-out infinite;
+    animation-delay: var(--entrance-delay, 0s);
 }
 
-.floating-envelope:not(.opened) {
-    animation: float 5s ease-in-out infinite;
+/* Entrance animation - envelopes drift in */
+@keyframes entranceFloat {
+    0% {
+        opacity: 0;
+        transform: translate(var(--entrance-x, 0px), var(--entrance-y, 50px)) rotate(var(--rotation, 0deg)) scale(0.5);
+    }
+    15% {
+        opacity: 1;
+        transform: translate(0px, 0px) rotate(var(--rotation, 0deg)) scale(1);
+    }
+    25% {
+        transform: translate(var(--drift-x, 3px), calc(var(--drift-y, -12px) * 0.6)) rotate(calc(var(--rotation, 0deg) + 1.5deg));
+    }
+    50% {
+        transform: translate(calc(var(--drift-x, 3px) * -0.5), var(--drift-y, -12px)) rotate(calc(var(--rotation, 0deg) + 3deg));
+    }
+    75% {
+        transform: translate(calc(var(--drift-x, 3px) * -1), calc(var(--drift-y, -12px) * 0.4)) rotate(calc(var(--rotation, 0deg) + 1deg));
+    }
+    100% {
+        transform: translate(0px, 0px) rotate(var(--rotation, 0deg));
+    }
 }
 
 .floating-envelope:hover {
-    transform: scale(1.15) translateY(-10px) !important;
     filter: drop-shadow(0 15px 30px rgba(233, 30, 99, 0.5));
     z-index: 20;
 }
 
 .floating-envelope.opened {
-    opacity: 0.25;
+    opacity: 0.2 !important;
     pointer-events: none;
-    filter: grayscale(0.5);
-}
-
-@keyframes float {
-    0%, 100% {
-        transform: translateY(0px) rotate(var(--rotation, 0deg));
-    }
-    50% {
-        transform: translateY(-15px) rotate(calc(var(--rotation, 0deg) + 3deg));
-    }
+    filter: grayscale(0.5) brightness(0.7);
 }
 
 /* Envelope Design */
@@ -272,6 +290,7 @@ html {
     height: 100%;
     position: relative;
     filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.4));
+    overflow: visible;
 }
 
 .env-back {
@@ -301,40 +320,14 @@ html {
 
 .envelope-label {
     position: absolute;
-    bottom: -22px;
+    bottom: -18px;
     left: 50%;
     transform: translateX(-50%);
     font-family: 'Dancing Script', cursive;
-    font-size: 1rem;
+    font-size: 0.85rem;
     color: #f8bbd9;
     white-space: nowrap;
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
-}
-
-/* Progress Indicator */
-.progress-indicator {
-    position: fixed;
-    bottom: 25px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(10px);
-    padding: 12px 25px;
-    border-radius: 30px;
-    border: 1px solid rgba(255, 182, 193, 0.2);
-    z-index: 50;
-    text-align: center;
-}
-
-.progress-hearts {
-    margin-bottom: 5px;
-    font-size: 1.1rem;
-    letter-spacing: 3px;
-}
-
-#progressText {
-    font-size: 0.85rem;
-    color: #d4a5a5;
 }
 
 /* ============================================
@@ -346,13 +339,13 @@ html {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(0, 0, 0, 0);
     display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.5s ease, visibility 0.5s ease;
+    transition: opacity 0.4s ease, visibility 0.4s ease, background 0.4s ease;
     z-index: 1000;
     padding: 20px;
 }
@@ -360,12 +353,21 @@ html {
 .letter-overlay.active {
     opacity: 1;
     visibility: visible;
+    background: rgba(0, 0, 0, 0.92);
 }
 
 .envelope-open-container {
     perspective: 1000px;
     width: 100%;
     max-width: 340px;
+    transform: scale(0.8);
+    opacity: 0;
+    transition: transform 0.4s ease, opacity 0.4s ease;
+}
+
+.letter-overlay.active .envelope-open-container {
+    transform: scale(1);
+    opacity: 1;
 }
 
 .envelope-large {
@@ -394,11 +396,11 @@ html {
     border-radius: 0 0 8px 8px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
     z-index: 20;
-    transition: transform 0.6s ease;
+    transition: transform 0.5s ease 0.2s, opacity 0.4s ease 0.3s;
 }
 
 .envelope-large.opening .envelope-front {
-    transform: translateY(100px);
+    transform: translateY(80px);
     opacity: 0;
 }
 
@@ -411,7 +413,7 @@ html {
     background: linear-gradient(180deg, #e8d4c4 0%, #d4c4b4 100%);
     clip-path: polygon(0 100%, 50% 0, 100% 100%);
     transform-origin: bottom center;
-    transition: transform 0.5s ease;
+    transition: transform 0.4s ease;
     z-index: 25;
 }
 
@@ -423,7 +425,7 @@ html {
     position: absolute;
     top: -35px;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%) scale(1);
     width: 50px;
     height: 50px;
     background: radial-gradient(circle, #e91e63 0%, #ad1457 100%);
@@ -434,7 +436,7 @@ html {
     font-size: 22px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), inset 0 2px 5px rgba(255,255,255,0.2);
     z-index: 30;
-    transition: transform 0.5s ease, opacity 0.3s ease;
+    transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
 .envelope-large.opening .wax-seal {
@@ -447,10 +449,10 @@ html {
     position: absolute;
     top: 30px;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%) translateY(0);
     width: 90%;
     z-index: 15;
-    transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s;
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.25s;
 }
 
 .envelope-large.opening .envelope-letter {
@@ -638,35 +640,45 @@ html {
 /* ============================================
    RESPONSIVE
    ============================================ */
-@media (max-width: 380px) {
-    .welcome-content h1 {
-        font-size: 2.4rem;
-    }
-
+/* Mobile-first: Scale UP on larger screens */
+@media (min-width: 400px) {
     .floating-envelope {
-        width: 90px;
-        height: 62px;
+        width: 100px;
+        height: 68px;
     }
 
-    .envelope-large {
-        height: 200px;
+    .envelope-label {
+        bottom: -20px;
+        font-size: 0.95rem;
     }
 
-    .envelope-front, .envelope-back {
-        height: 130px;
+    .envelopes-area {
+        padding: 10px 40px 40px 40px;
+    }
+}
+
+@media (min-width: 500px) {
+    .floating-envelope {
+        width: 110px;
+        height: 75px;
     }
 
-    .letter-paper {
-        padding: 20px 15px;
+    .envelope-label {
+        bottom: -22px;
+        font-size: 1rem;
     }
 
-    .final-content h1 {
+    .envelopes-area {
+        padding: 10px 60px 45px 60px;
+    }
+
+    .welcome-content h1 {
         font-size: 3rem;
     }
 }
 
-@media (min-height: 800px) {
+@media (min-height: 700px) {
     .envelopes-area {
-        max-height: 70vh;
+        max-height: 72vh;
     }
 }

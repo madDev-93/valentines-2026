@@ -1,13 +1,13 @@
 // Track opened letters
 let openedLetters = new Set();
 
-// Better positioned envelopes - spread out nicely on mobile
+// Envelope positions - mobile-friendly layout (% based, accounts for padding)
 const envelopePositions = [
-    { x: 10, y: 5, rotation: -12 },
-    { x: 55, y: 8, rotation: 8 },
-    { x: 25, y: 35, rotation: -5 },
-    { x: 60, y: 42, rotation: 10 },
-    { x: 35, y: 68, rotation: -8 }
+    { x: 8, y: 0, rotation: -10 },
+    { x: 52, y: 3, rotation: 8 },
+    { x: 25, y: 30, rotation: -5 },
+    { x: 58, y: 35, rotation: 7 },
+    { x: 35, y: 60, rotation: -6 }
 ];
 
 // Create floating hearts background
@@ -36,16 +36,6 @@ function createHeart(container, symbols) {
     setTimeout(() => heart.remove(), 20000);
 }
 
-// Start the experience
-function startExperience() {
-    document.getElementById('welcome').classList.remove('active');
-    setTimeout(() => {
-        document.getElementById('envelopesScreen').classList.add('active');
-        createFloatingEnvelopes();
-        updateProgress();
-    }, 300);
-}
-
 // Create the floating envelopes
 function createFloatingEnvelopes() {
     const container = document.getElementById('envelopesArea');
@@ -60,7 +50,23 @@ function createFloatingEnvelopes() {
         envelope.style.left = `${pos.x}%`;
         envelope.style.top = `${pos.y}%`;
         envelope.style.setProperty('--rotation', `${pos.rotation}deg`);
-        envelope.style.animationDelay = `${index * 0.3}s`;
+
+        // Unique entrance and floating for each envelope
+        const duration = 4 + Math.random() * 2; // 4-6s for full cycle
+        const entranceDelay = index * 0.15; // Staggered entrance
+        const driftX = 3 + Math.random() * 5;
+        const driftY = -8 - Math.random() * 6;
+
+        // Random entrance direction
+        const entranceX = (Math.random() - 0.5) * 60;
+        const entranceY = 40 + Math.random() * 30;
+
+        envelope.style.setProperty('--float-duration', `${duration}s`);
+        envelope.style.setProperty('--entrance-delay', `${entranceDelay}s`);
+        envelope.style.setProperty('--drift-x', `${driftX}px`);
+        envelope.style.setProperty('--drift-y', `${driftY}px`);
+        envelope.style.setProperty('--entrance-x', `${entranceX}px`);
+        envelope.style.setProperty('--entrance-y', `${entranceY}px`);
 
         if (!isOpened) {
             envelope.onclick = () => openLetter(letter, envelope);
@@ -102,24 +108,23 @@ function openLetter(letter, envelopeElement) {
     document.getElementById('letterPhoto').src = letter.photo;
     document.getElementById('letterText').textContent = letter.message;
 
-    // Show overlay
     const overlay = document.getElementById('letterOverlay');
     const envelopeLarge = document.getElementById('envelopeLarge');
 
-    // Reset state
+    // Ensure clean state before opening
     envelopeLarge.classList.remove('opening');
 
+    // Show overlay first
     overlay.classList.add('active');
 
-    // Trigger opening after overlay fades in
+    // Start envelope opening animation after overlay appears
     setTimeout(() => {
         envelopeLarge.classList.add('opening');
-    }, 400);
+    }, 350);
 
     // Mark as opened
     openedLetters.add(letter.id);
     envelopeElement.classList.add('opened');
-    updateProgress();
 }
 
 // Sparkle effect
@@ -155,31 +160,18 @@ function closeLetter() {
     const overlay = document.getElementById('letterOverlay');
     const envelopeLarge = document.getElementById('envelopeLarge');
 
-    envelopeLarge.classList.remove('opening');
+    // Close overlay first (envelope will scale down with it)
+    overlay.classList.remove('active');
 
+    // Reset envelope state after overlay is hidden
     setTimeout(() => {
-        overlay.classList.remove('active');
+        envelopeLarge.classList.remove('opening');
 
         // Check if all opened
         if (openedLetters.size === letters.length) {
-            setTimeout(showFinalScreen, 600);
+            setTimeout(showFinalScreen, 400);
         }
-    }, 300);
-}
-
-// Update progress indicator
-function updateProgress() {
-    const heartsContainer = document.getElementById('progressHearts');
-    const textEl = document.getElementById('progressText');
-
-    // Show hearts for progress
-    let hearts = '';
-    for (let i = 0; i < letters.length; i++) {
-        hearts += i < openedLetters.size ? '❤️' : '🤍';
-    }
-    heartsContainer.textContent = hearts;
-
-    textEl.textContent = `${openedLetters.size} of ${letters.length} letters opened`;
+    }, 400);
 }
 
 // Show final screen
@@ -200,4 +192,5 @@ function showFinalScreen() {
 // Initialize on load
 document.addEventListener('DOMContentLoaded', () => {
     createHearts();
+    createFloatingEnvelopes();
 });
